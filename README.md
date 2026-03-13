@@ -4,11 +4,11 @@ An AI-powered agent that converts GitLab issues into detailed development plans 
 
 ## Features
 
-- 🤖 AI-generated development plans using Claude
-- 📋 Structured output: implementation steps, task checklist, test scenarios
-- 🔗 GitLab webhook integration for automatic triggering
-- 💬 Posts plans as issue comments
-- 🔐 Webhook signature verification
+- AI-generated development plans using Claude
+- Structured output: implementation steps, task checklist, test scenarios
+- GitLab webhook integration for automatic triggering
+- Posts plans as issue comments
+- Webhook signature verification
 
 ## Setup
 

@@ -32,6 +32,7 @@ def handle_issue_webhook():
     """
     Handle GitLab issue webhook events.
     """
+    print("WEBHOOK FUNCTION CALLED", flush=True)
     print("🔔 Webhook received!")
     
     data = request.get_json()

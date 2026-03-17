@@ -42,7 +42,7 @@ def handle_issue_webhook():
         print("❌ Not an issue event")
         return jsonify({"status": "ignored"}), 200
     
-    action = data.get("action")
+    action = data.get("object_attributes", {}).get("action")
     print(f"Action: {action}")
     
     if action not in ["open", "update"]:

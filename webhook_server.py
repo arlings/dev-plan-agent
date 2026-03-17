@@ -54,6 +54,7 @@ def handle_issue_webhook():
     print(f"Title: {issue_title}")
     print(f"Description: {issue_description}")
 
+
     if "@dev-planner" not in issue_description and "@dev-planner" not in issue_title:
         print("❌ @dev-planner not mentioned")
         return jsonify({"status": "no mention"}), 200

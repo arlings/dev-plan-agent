@@ -1,6 +1,6 @@
 import os
 import json
-from anthropic import Anthropic
+import requests
 from gitlab_integration import GitLabClient
 from dotenv import load_dotenv
 
@@ -8,18 +8,17 @@ load_dotenv()
 
 class DevPlanAgent:
     def __init__(self):
-        self.client = Anthropic(api_key=os.getenv("CLAUDE_API_KEY"))
         self.gitlab = GitLabClient(
             token=os.getenv("GITLAB_TOKEN"),
             url=os.getenv("GITLAB_URL"),
             project_id=os.getenv("PROJECT_ID")
         )
-        self.model = "claude-3-5-sonnet-20241022"
+        self.ollama_url = os.getenv("OLLAMA_URL", "http://localhost:11434")
+        self.model = "mistral"
     
     def generate_dev_plan(self, issue_title: str, issue_description: str) -> dict:
         """
-        Generate a development plan from an issue using Claude.
-        Returns a dict with implementation_steps, task_checklist, and test_scenarios.
+        Generate a development plan from an issue using Ollama.
         """
         prompt = f"""You are a senior software engineer creating a detailed development plan.
 
@@ -32,34 +31,43 @@ Generate a structured development plan with:
 3. Test Scenarios: 4-6 test cases covering happy path and edge cases
 
 Format your response as JSON with keys: "implementation_steps", "task_checklist", "test_scenarios".
-Each should be an array of strings."""
+Each should be an array of strings.
+
+Return ONLY the JSON, no other text."""
         
-        message = self.client.messages.create(
-            model=self.model,
-            max_tokens=1024,
-            messages=[
-                {"role": "user", "content": prompt}
-            ]
-        )
-        
-        response_text = message.content[0].text
-        
-        # Parse JSON from response
         try:
-            # Extract JSON from response (Claude might add extra text)
-            json_start = response_text.find('{')
-            json_end = response_text.rfind('}') + 1
-            json_str = response_text[json_start:json_end]
-            plan = json.loads(json_str)
-        except (json.JSONDecodeError, ValueError):
-            # Fallback if parsing fails
-            plan = {
-                "implementation_steps": ["Parse issue", "Design solution", "Implement", "Test", "Deploy"],
-                "task_checklist": ["Create tasks"],
-                "test_scenarios": ["Test basic functionality"]
-            }
-        
-        return plan
+            response = requests.post(
+                f"{self.ollama_url}/api/generate",
+                json={
+                    "model": self.model,
+                    "prompt": prompt,
+                    "stream": False
+                },
+                timeout=60
+            )
+            response.raise_for_status()
+            
+            result = response.json()
+            response_text = result.get("response", "")
+            
+            # Parse JSON from response
+            try:
+                json_start = response_text.find('{')
+                json_end = response_text.rfind('}') + 1
+                json_str = response_text[json_start:json_end]
+                plan = json.loads(json_str)
+            except (json.JSONDecodeError, ValueError):
+                # Fallback if parsing fails
+                plan = {
+                    "implementation_steps": ["Parse issue", "Design solution", "Implement", "Test", "Deploy"],
+                    "task_checklist": ["Create tasks", "Implement features", "Write tests"],
+                    "test_scenarios": ["Test basic functionality", "Test edge cases"]
+                }
+            
+            return plan
+        except Exception as e:
+            print(f"Error calling Ollama: {e}")
+            raise
     
     def post_plan_to_issue(self, issue_iid: int, plan: dict) -> None:
         """
@@ -100,5 +108,4 @@ Each should be an array of strings."""
 
 if __name__ == "__main__":
     agent = DevPlanAgent()
-    # Example: process issue #1
     agent.process_issue(1)

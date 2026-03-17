@@ -8,7 +8,7 @@ load_dotenv()
 
 class DevPlanAgent:
     def __init__(self):
-        self.client = Anthropic()
+        self.client = Anthropic(api_key=os.getenv("CLAUDE_API_KEY"))
         self.gitlab = GitLabClient(
             token=os.getenv("GITLAB_TOKEN"),
             url=os.getenv("GITLAB_URL"),

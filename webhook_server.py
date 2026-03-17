@@ -49,11 +49,11 @@ def handle_issue_webhook():
         print(f"❌ Action {action} not in [open, update]")
         return jsonify({"status": "ignored"}), 200
     
-    issue_description = data.get("object_attributes", {}).get("description", "")
+    issue_description = data.get("object_attributes", {}).get("description") or ""
     issue_title = data.get("object_attributes", {}).get("title", "")
     print(f"Title: {issue_title}")
     print(f"Description: {issue_description}")
-    
+
     if "@dev-planner" not in issue_description and "@dev-planner" not in issue_title:
         print("❌ @dev-planner not mentioned")
         return jsonify({"status": "no mention"}), 200

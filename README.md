@@ -4,7 +4,7 @@ An AI-powered agent that converts GitLab issues into detailed development plans 
 
 ## Features
 
-- AI-generated development plans using Claude
+- AI-generated development plans using Claude that edit issue boards
 - Structured output: implementation steps, task checklist, test scenarios
 - GitLab webhook integration for automatic triggering
 - Posts plans as issue comments

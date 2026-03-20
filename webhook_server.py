@@ -1,4 +1,5 @@
 import os
+import sys
 import json
 import hmac
 import hashlib
@@ -29,9 +30,9 @@ def verify_webhook_signature(payload: bytes, signature: str) -> bool:
 
 @app.route("/webhook/issue", methods=["POST"])
 def handle_issue_webhook():
-    """
-    Handle GitLab issue webhook events.
-    """
+    print("WEBHOOK RECEIVED - START", flush=True)
+    sys.stdout.flush()
+
     print("WEBHOOK FUNCTION CALLED", flush=True)
     print("🔔 Webhook received!")
     
@@ -53,7 +54,6 @@ def handle_issue_webhook():
     issue_title = data.get("object_attributes", {}).get("title", "")
     print(f"Title: {issue_title}")
     print(f"Description: {issue_description}")
-
 
     if "@dev-planner" not in issue_description and "@dev-planner" not in issue_title:
         print("❌ @dev-planner not mentioned")

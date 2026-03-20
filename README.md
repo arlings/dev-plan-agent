@@ -103,27 +103,4 @@ agent.process_issue(issue_iid=1)
 ├── .env.example          # Environment template
 └── README.md             # This file
 ```
-
-## Next Steps for Hackathon
-
-- [ ] Deploy to serverless platform
-- [ ] Test with sample issues
-- [ ] Add support for creating child issues from checklist
-- [ ] Enhance plan generation with project context
-- [ ] Add support for different issue types (bug, feature, etc.)
-- [ ] Create UI dashboard for plan management
-
-## Troubleshooting
-
-**Webhook not triggering?**
-- Check GitLab webhook logs: Project > Webhooks > Recent deliveries
-- Verify `@dev-planner` mention is in issue
-- Ensure webhook URL is publicly accessible
-
-**Claude API errors?**
-- Verify `CLAUDE_API_KEY` is correct
-- Check API quota and billing
-
-**GitLab authentication issues?**
-- Ensure token has `api` and `read_api` scopes
 - Verify `PROJECT_ID` is correct
